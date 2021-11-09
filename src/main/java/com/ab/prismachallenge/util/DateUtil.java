@@ -7,6 +7,9 @@ import java.util.Date;
 
 public class DateUtil {
 
+    private DateUtil() {
+    }
+
     @SneakyThrows
     public static Date convertStringToDate(String date) {
 

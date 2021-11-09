@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
 
     private final BorrowedRepository borrowedRepository;
-
     private final BookRepository bookRepository;
 
     @Override
@@ -30,7 +29,7 @@ public class BookServiceImpl implements BookService {
                 DateUtil.convertStringToDate(b.getBorrowedFrom()).after(DateUtil.convertStringToDate(dateFrom)) &&
                 (DateUtil.convertStringToDate(b.getBorrowedTo()).before(DateUtil.convertStringToDate(dateTo)))).collect(Collectors.toList());
 
-        List<String> nameOfBorrowedBooks = borrowedList.stream().map(b -> b.getBook()).collect(Collectors.toList());
+        List<String> nameOfBorrowedBooks = borrowedList.stream().map(Borrowed::getBook).collect(Collectors.toList());
 
         return bookRepository.findAll().stream().filter(b -> nameOfBorrowedBooks.contains(b.getTitle())).collect(Collectors.toList());
     }
@@ -38,9 +37,11 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getAvailableBooks() {
 
-        List<String> nameOfBorrowedBooks = borrowedRepository.findAll().stream().filter(b -> DateUtil.convertStringToDate(b.getBorrowedFrom()).before(new Date()) &&
-                (DateUtil.convertStringToDate(b.getBorrowedTo()).after(new Date()))).collect(Collectors.toList()).stream().map(b -> b.getBook()).collect(Collectors.toList());
-        ;
+        List<String> nameOfBorrowedBooks = borrowedRepository.findAll().stream()
+                .filter(b -> DateUtil.convertStringToDate(b.getBorrowedFrom()).before(new Date()) &&
+                        (DateUtil.convertStringToDate(b.getBorrowedTo()).after(new Date()))).collect(Collectors.toList())
+                .stream().map(Borrowed::getBook).collect(Collectors.toList());
+
         List<Book> books = bookRepository.findAll();
 
         List<Book> availableBooks = new ArrayList<>();

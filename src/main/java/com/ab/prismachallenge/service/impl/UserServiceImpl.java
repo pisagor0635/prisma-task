@@ -27,9 +27,7 @@ public class UserServiceImpl implements UserService {
         List<Borrowed> borrowedList = borrowedRepository.findAll();
         List<String> borrowers = borrowedList.stream().map(Borrowed::getBorrower).distinct().collect(Collectors.toList());
         List<User> users = userRepository.findAll();
-        List<User> userBorrowedAtLeastOneBook = users.stream().filter(u -> borrowers.contains(u.getName() + "," + u.getFirstName())).collect(Collectors.toList());
-
-        return userBorrowedAtLeastOneBook;
+        return users.stream().filter(u -> borrowers.contains(u.getName() + "," + u.getFirstName())).collect(Collectors.toList());
     }
 
     @Override
@@ -41,10 +39,9 @@ public class UserServiceImpl implements UserService {
         List<User> nonTerminatedUsersWhoHaveNotCurrentlyBorrowedAnything = new ArrayList<>();
 
         for (User u : users) {
-            if (u.getMemberTill() == null || DateUtil.convertStringToDate(u.getMemberTill()).after(new Date())) {
-                if (!borrowers.contains(u.getName() + "," + u.getFirstName())) {
-                    nonTerminatedUsersWhoHaveNotCurrentlyBorrowedAnything.add(u);
-                }
+            if ((u.getMemberTill() == null || DateUtil.convertStringToDate(u.getMemberTill()).after(new Date()))
+                    && (!borrowers.contains(u.getName() + "," + u.getFirstName()))) {
+                nonTerminatedUsersWhoHaveNotCurrentlyBorrowedAnything.add(u);
             }
         }
         return nonTerminatedUsersWhoHaveNotCurrentlyBorrowedAnything;
@@ -53,10 +50,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsersBorrowedOnAGivenDate(String date) {
 
-        List<String> borrowers = borrowedRepository.findAll().stream().filter(b-> (DateUtil.convertStringToDate(b.getBorrowedFrom())
-                                                   .before(DateUtil.convertStringToDate(date)) && (DateUtil.convertStringToDate(b.getBorrowedTo())
-                                                   .after(DateUtil.convertStringToDate(date))))).collect(Collectors.toList())
-                                                   .stream().map(Borrowed::getBorrower).distinct().collect(Collectors.toList());
+        List<String> borrowers = borrowedRepository.findAll().stream().filter(b -> (DateUtil.convertStringToDate(b.getBorrowedFrom())
+                        .before(DateUtil.convertStringToDate(date)) && (DateUtil.convertStringToDate(b.getBorrowedTo())
+                        .after(DateUtil.convertStringToDate(date))))).collect(Collectors.toList())
+                .stream().map(Borrowed::getBorrower).distinct().collect(Collectors.toList());
 
         List<User> users = userRepository.findAll();
 

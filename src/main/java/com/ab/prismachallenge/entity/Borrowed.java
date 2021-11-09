@@ -1,10 +1,8 @@
 package com.ab.prismachallenge.entity;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.sql.Date;
 
 @Entity
 @Table(name = "borrowed")
